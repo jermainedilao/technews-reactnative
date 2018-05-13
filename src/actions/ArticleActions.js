@@ -56,35 +56,21 @@ export const articleOpen = (article) => {
   console.log(url);
   
   return (dispatch) => {
-    if (Platform.OS === "ios") {
-      // Temporary fix. Because of CustomTabs iOS issue..
-      Linking.openURL(url)
-        .then((launched) => {
-          console.log(`Launched custom tabs: ${launched}`);
-          dispatch({
-            type: ARTICLE_OPEN_URL_SUCCESS
-          })
+    // Temporary fix. Because of CustomTabs iOS issue..
+    let promise = Platform.OS === "ios" ? Linking.openURL(url) : CustomTabs.openURL(url);
+    
+    promise
+      .then((launched) => {
+        console.log(`Launched custom tabs: ${launched}`);
+        dispatch({
+          type: ARTICLE_OPEN_URL_SUCCESS
         })
-        .catch((error) => {
-          console.log(error);
-          dispatch({
-            type: ARTICLE_OPEN_URL_FAIL
-          })
-        });
-    } else {
-      CustomTabs.openURL(url)
-        .then((launched) => {
-          console.log(`Launched custom tabs: ${launched}`);
-          dispatch({
-            type: ARTICLE_OPEN_URL_SUCCESS
-          })
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch({
+          type: ARTICLE_OPEN_URL_FAIL
         })
-        .catch((error) => {
-          console.log(error);
-          dispatch({
-            type: ARTICLE_OPEN_URL_FAIL
-          })
-        });
-    }
+      });
   };
 };
