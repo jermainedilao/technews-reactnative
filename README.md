@@ -1,6 +1,6 @@
 # technews-reactnative
 
-Technews is a react-native version of my original technews app. 
+Technews is a react-native version of my original [technews](https://github.com/jermainedilao/technews) app. 
 
 Technews is a work-in-progress app that lists tech related articles from different sources powered by [News API](https://newsapi.org/). Technews allows you to bookmark articles for future reading.
 
