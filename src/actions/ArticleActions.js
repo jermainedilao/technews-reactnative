@@ -1,8 +1,12 @@
 import { Platform, Linking } from "react-native";
 import { CustomTabs } from "react-native-custom-tabs";
 import { NEWS_API_KEY } from "../tokens";
-import { ARTICLE_OPEN_URL_FAIL, ARTICLE_OPEN_URL_SUCCESS, ARTICLE_PRESS, ARTICLES_FETCH } from "./types";
+import {
+  ARTICLE_BOOKMARK, ARTICLE_OPEN_URL_FAIL, ARTICLE_OPEN_URL_SUCCESS, ARTICLE_PRESS,
+  ARTICLES_FETCH
+} from "./types";
 import { BASE_URL } from "../constants";
+import { convertArticleToArticleViewObject } from "../Parser";
 
 /**
  * Fetches list of articles from BE.
@@ -30,10 +34,14 @@ export const articlesFetch = () => {
       .then((response) => response.json())
       .then((response) => {
         console.log(response);
+  
+        let articles = response.articles.map((article) => {
+          return convertArticleToArticleViewObject(article)
+        });
         
         dispatch({
           type: ARTICLES_FETCH,
-          payload: response.articles
+          payload: articles
         })
       })
       .catch((error) => {
@@ -73,4 +81,20 @@ export const articleOpen = (article) => {
         })
       });
   };
+};
+
+/**
+ * Bookmarks or removes bookmark from an article.
+ **/
+export const articleBookmarkOrRemoveBookmark = (article) => {
+  console.log("articleBookmarkOrRemoveBookmark");
+  
+  // Temporary workaround.
+  // Replace with bookmarking inside DB then pass the new list from DB to reducers.
+  const newArticle = { ...article, bookmark: !article.bookmark};
+  
+  return {
+    type: ARTICLE_BOOKMARK,
+    payload: newArticle
+  }
 };

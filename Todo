@@ -1,0 +1,10 @@
+
+
+CONTINUE: Bookmark state not changing in UI.
+
+
+- Add bookmark screen.
+- Add bookmark UI functionality
+- Add database
+- Persist bookmark functionality
+- Pagination

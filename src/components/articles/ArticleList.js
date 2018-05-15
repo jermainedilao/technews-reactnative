@@ -6,6 +6,10 @@ import ArticleListItem from "./ArticleListItem";
 
 
 class ArticleList extends Component {
+  constructor() {
+    super();
+  }
+  
   componentWillMount() {
     this.props.articlesFetch();
   }
@@ -27,6 +31,8 @@ class ArticleList extends Component {
   
   renderView() {
     let { articleList } = this.props;
+    
+    console.log("renderView");
     
     if (articleList.length === 0) articleList = null;
     
@@ -60,8 +66,6 @@ const styles = {
 };
 
 const mapStateToProps = (state) => {
-  console.log(state);
-  
   const { articleList } = state;
   
   return articleList;

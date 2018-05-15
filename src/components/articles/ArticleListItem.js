@@ -1,17 +1,54 @@
 import React, { Component } from "react";
 import { Image, Text, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import { CardView, CardButton, CardSection, HorizontalLineSeparator } from "../common/index";
+import { CardButton, CardSection, CardView, HorizontalLineSeparator } from "../common/index";
 import {
   BOOKMARK_COLOR,
-  TEXT_COLOR_PRIMARY, TEXT_COLOR_SECONDARY, TEXT_SIZE_LARGE, TEXT_SIZE_NORMAL,
+  DEFAULT_ARTICLE_IMAGE_HEIGHT,
+  TEXT_COLOR_PRIMARY,
+  TEXT_COLOR_SECONDARY,
+  TEXT_SIZE_LARGE,
+  TEXT_SIZE_NORMAL,
   TEXT_SIZE_SMALL
 } from "../../styles";
-import { articleOpen } from "../../actions";
+import { articleBookmarkOrRemoveBookmark, articleOpen } from "../../actions";
 
 
 class ArticleListItem extends Component {
-  onPress = () => this.props.articleOpen(this.props.article);
+  constructor() {
+    super();
+    
+    this.state = {
+      imageHeight: DEFAULT_ARTICLE_IMAGE_HEIGHT
+    }
+  }
+  
+  componentWillMount() {
+    const { article } = this.props;
+    
+    Image.getSize(article.urlToImage, (width, height) => {
+      // Adjust to original image height if less than the DEFAULT_ARTICLE_IMAGE_HEIGHT.
+      if (height < DEFAULT_ARTICLE_IMAGE_HEIGHT) {
+        this.setState({
+          imageHeight: height
+        });
+      }
+    }, (error) => {
+      console.log(error);
+    });
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    console.log("componentWillReceiveProps");
+    console.log(nextProps);
+  }
+  
+  onArticlePress = () => this.props.articleOpen(this.props.article);
+  
+  onBookmarkPress = () => {
+    console.log("onBookmarkPress");
+    this.props.articleBookmark(this.props.article);
+  };
   
   render() {
     const { article } = this.props;
@@ -22,12 +59,12 @@ class ArticleListItem extends Component {
     
     return (
       <TouchableOpacity
-        onPress={this.onPress}
+        onPress={this.onArticlePress}
         activeOpacity={0.6}
       >
         <CardView>
           <Image
-            style={imageStyle}
+            style={[imageStyle, { height: this.state.imageHeight }]}
             resizeMode="cover"
             resizeMethod="scale"
             source={{ uri: article.urlToImage }}
@@ -47,10 +84,11 @@ class ArticleListItem extends Component {
           <HorizontalLineSeparator style={horizontalLineSeparator} />
           
           <CardButton
-            text="Add"
+            text={article.bookmark ? "Remove" : "Add"}
             buttonIconType="material"
-            buttonIconName="bookmark-border"
+            buttonIconName={article.bookmark ? "bookmark" : "bookmark-border"}
             buttonIconColor={BOOKMARK_COLOR}
+            onPress={this.onBookmarkPress}
           />
         </CardView>
       </TouchableOpacity>
@@ -62,7 +100,6 @@ const styles = {
   imageStyle: {
     flex: 1,
     width: null,
-    height: 200,
     minHeight: 150
   },
   titleTextStyle: {
@@ -97,4 +134,7 @@ const mapStateToProps = (state) => {
   return {};
 };
 
-export default connect(mapStateToProps, { articleOpen })(ArticleListItem);
+export default connect(mapStateToProps, {
+  articleOpen,
+  articleBookmark: articleBookmarkOrRemoveBookmark
+})(ArticleListItem);

@@ -1,7 +1,15 @@
+// DIMENSIONS
+
 // Text sizes.
 export const TEXT_SIZE_SMALL = 10;
 export const TEXT_SIZE_NORMAL = 14;
 export const TEXT_SIZE_LARGE = 16;
+
+// Image sizes.
+export const DEFAULT_ARTICLE_IMAGE_HEIGHT = 200;
+
+
+// COLORS
 
 // Text colors.
 export const TEXT_COLOR_PRIMARY = "#0F0F0F";

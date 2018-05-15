@@ -10,11 +10,12 @@ import { CARDVIEW_BACKGROUND_COLOR, TEXT_COLOR_PRIMARY } from "../../styles";
  * @property buttonIconType React native elements icon type (optional, defaults to "MaterialIcons").
  * @property buttonIconName React native elements icon name.
  * @property buttonIconColor Color of the icon (i.e, #FFFF00).
+ * @property onPress Callback function when the button is pressed.
  *
  * @see https://oblador.github.io/react-native-vector-icons/
  **/
 class CardButton extends Component {
-  onPress = () => console.log("onButtonPress");
+  onPress = () => this.props.onPress();
   
   render() {
     const { buttonContainerStyle, buttonInnerContainerStyle, buttonTextStyle } = styles;
