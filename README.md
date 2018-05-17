@@ -26,7 +26,7 @@ And, you're all set!
 * [React Native Elements](https://react-native-training.github.io/react-native-elements/) - Currently, for button icons.
 * [React Navigation](https://reactnavigation.org/) - Routing and navigation for React Native apps.
 * [React Native Custom Tabs](https://github.com/droibit/react-native-custom-tabs) - Chrome Custom Tabs for React Native.
-* [React Navigation Header Buttons(https://github.com/vonovak/react-navigation-header-buttons) - To mimic native header buttons (ActionBar/Toolbar in android).
+* [React Navigation Header Buttons](https://github.com/vonovak/react-navigation-header-buttons) - To mimic native header buttons (ActionBar/Toolbar in android).
 
 ### Todo
 * Add database.
