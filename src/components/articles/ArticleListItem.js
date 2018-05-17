@@ -1,7 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
 import { Image, Text, TouchableOpacity } from "react-native";
-import { connect } from "react-redux";
-import { CardButton, CardSection, CardView, HorizontalLineSeparator } from "../common/index";
+import { CardButton, CardSection, CardView, HorizontalLineSeparator } from "../common";
 import {
   BOOKMARK_COLOR,
   DEFAULT_ARTICLE_IMAGE_HEIGHT,
@@ -11,16 +10,28 @@ import {
   TEXT_SIZE_NORMAL,
   TEXT_SIZE_SMALL
 } from "../../styles";
-import { articleBookmarkOrRemoveBookmark, articleOpen } from "../../actions";
 
-
-class ArticleListItem extends Component {
+/**
+ * Component for each item in article list.
+ *
+ * @property article Article object to be displayed.
+ * @property onBookmarkPress Function to be called when bookmark button is pressed. Receives article as parameter.
+ * @property onArticlePress Function to be called when article is pressed. Receives article as parameter.
+ **/
+class ArticleListItem extends React.PureComponent {
   constructor() {
     super();
     
     this.state = {
       imageHeight: DEFAULT_ARTICLE_IMAGE_HEIGHT
     }
+  }
+  
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log("componentDidUpdate");
+    console.log(`prevProps: ${prevProps}`);
+    console.log(`newProps: ${this.props}`);
+    console.log(prevState);
   }
   
   componentWillMount() {
@@ -40,15 +51,11 @@ class ArticleListItem extends Component {
   
   componentWillReceiveProps(nextProps) {
     console.log("componentWillReceiveProps");
-    console.log(nextProps);
   }
   
-  onArticlePress = () => this.props.articleOpen(this.props.article);
+  onArticlePress = () => this.props.onArticlePress(this.props.article);
   
-  onBookmarkPress = () => {
-    console.log("onBookmarkPress");
-    this.props.articleBookmark(this.props.article);
-  };
+  onBookmarkPress = () => this.props.onBookmarkPress(this.props.article);
   
   render() {
     const { article } = this.props;
@@ -130,11 +137,4 @@ const styles = {
   }
 };
 
-const mapStateToProps = (state) => {
-  return {};
-};
-
-export default connect(mapStateToProps, {
-  articleOpen,
-  articleBookmark: articleBookmarkOrRemoveBookmark
-})(ArticleListItem);
+export default ArticleListItem;
