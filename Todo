@@ -3,8 +3,9 @@
 CONTINUE: Bookmark state not changing in UI.
 
 
-- Add bookmark screen.
-- Add bookmark UI functionality
-- Add database
 - Persist bookmark functionality
+- When removing bookmarks from bookmarks screen. Make sure it gets reflected in main screen.
 - Pagination
+- Add NewsAPI attribution
+- Improve implementation of bookmark/unbookmarking.
+- Fix android back button exiting the app issue.

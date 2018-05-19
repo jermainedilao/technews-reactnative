@@ -3,18 +3,8 @@ import { FlatList, StatusBar, View } from "react-native";
 import HeaderButtons from "react-navigation-header-buttons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import ArticleListItem from "./ArticleListItem";
-import {
-  articleBookmarkOrRemoveBookmark,
-  articleOpen,
-  articlesFetch,
-  replaceArticleById
-} from "./ArticleActions";
-import { convertArticleToArticleViewObject } from "../../Parser";
-import {
-  DEFAULT_HEADER_BUTTON_ICON_SIZE,
-  HEADER_BUTTON_ICON_COLOR,
-  setStatusBarStyle
-} from "../../styles";
+import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch, replaceArticleById } from "./ArticleActions";
+import { DEFAULT_HEADER_BUTTON_ICON_SIZE, HEADER_BUTTON_ICON_COLOR } from "../../styles";
 import { ROUTE_BOOKMARK_LIST } from "../../routes";
 
 class ArticleList extends Component {
@@ -47,7 +37,6 @@ class ArticleList extends Component {
   
   constructor() {
     super();
-    setStatusBarStyle();
     
     // Initial state.
     this.state = {
@@ -77,37 +66,32 @@ class ArticleList extends Component {
       refreshing: true
     });
     
-    articlesFetch()
-      .then((response) => response.json())
-      .then((response) => {
-        console.log(response);
-        
-        let articles = response.articles.map((article) => {
-          return convertArticleToArticleViewObject(article)
-        });
-        
-        this.setState({
-          articleList: articles,
-          refreshing: false
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        this.setState({
-          error,
-          refreshing: false
-        })
+    articlesFetch((articles) => {
+      this.setState({
+        articleList: articles,
+        refreshing: false
       });
+    }, (error) => {
+      this.setState({
+        error,
+        refreshing: false
+      });
+      alert(error);
+    });
   };
   
   onArticleBookmarkPress = (article) => {
-    let newArticle = articleBookmarkOrRemoveBookmark(article);
-    let newArticleList = replaceArticleById(this.state.articleList, newArticle);
-    
-    this.setState({
-      ...this.state,
-      articleList: newArticleList
-    });
+    articleBookmarkOrRemoveBookmark(
+      article, (newArticle) => {
+        let newArticleList = replaceArticleById(this.state.articleList, newArticle);
+        
+        this.setState({
+          ...this.state,
+          articleList: newArticleList
+        });
+      }, (error) => {
+        console.log(error);
+      });
   };
   
   onArticlePress = (article) => {
@@ -136,8 +120,6 @@ class ArticleList extends Component {
   renderView = () => {
     let { articleList } = this.state;
     
-    console.log("renderView");
-    
     if (articleList.length === 0) articleList = null;
     
     return (
@@ -153,6 +135,7 @@ class ArticleList extends Component {
   };
   
   render() {
+    console.log("render");
     const { containerStyle } = styles;
     
     return (
