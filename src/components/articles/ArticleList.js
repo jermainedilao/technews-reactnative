@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { FlatList, StatusBar, View } from "react-native";
+import { connect } from "react-redux";
 import HeaderButtons from "react-navigation-header-buttons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import ArticleListItem from "./ArticleListItem";
-import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch, replaceArticleById } from "./ArticleActions";
+import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch } from "../../actions";
 import { DEFAULT_HEADER_BUTTON_ICON_SIZE, HEADER_BUTTON_ICON_COLOR } from "../../styles";
 import { ROUTE_BOOKMARK_LIST } from "../../routes";
 
@@ -35,23 +36,6 @@ class ArticleList extends Component {
     };
   };
   
-  constructor() {
-    super();
-    
-    // Initial state.
-    this.state = {
-      /**
-       * List of articles to be displayed.
-       **/
-      articleList: [],
-      /**
-       * Error message to be displayed.
-       **/
-      error: "", // Display using snack.
-      refreshing: false
-    }
-  }
-  
   componentWillMount() {
     this.props.navigation.setParams({
       onBookmarkHeaderButtonPress: this.onBookmarkHeaderButtonPress
@@ -59,53 +43,24 @@ class ArticleList extends Component {
     this.articlesFetch();
   }
   
+  componentWillReceiveProps(nextProps) {
+    console.log("componentWillReceiveProps");
+    
+    const { error } = nextProps;
+  
+    if (error !== "") {
+      console.log(error);
+      alert(error);
+    }
+  }
+  
   onBookmarkHeaderButtonPress = () => this.props.navigation.navigate(ROUTE_BOOKMARK_LIST);
   
-  articlesFetch = () => {
-    this.setState({
-      refreshing: true
-    });
-    
-    articlesFetch((articles) => {
-      this.setState({
-        articleList: articles,
-        refreshing: false
-      });
-    }, (error) => {
-      this.setState({
-        error,
-        refreshing: false
-      });
-      alert(error);
-    });
-  };
+  articlesFetch = () => this.props.articlesFetch();
   
-  onArticleBookmarkPress = (article) => {
-    articleBookmarkOrRemoveBookmark(
-      article, (newArticle) => {
-        let newArticleList = replaceArticleById(this.state.articleList, newArticle);
-        
-        this.setState({
-          ...this.state,
-          articleList: newArticleList
-        });
-      }, (error) => {
-        console.log(error);
-      });
-  };
+  onArticleBookmarkPress = (article) => this.props.articleBookmarkOrRemoveBookmark(article);
   
-  onArticlePress = (article) => {
-    articleOpen(article)
-      .then((launched) => {
-        console.log(`Launched browser: ${launched}`);
-      })
-      .catch((error) => {
-        console.log(error);
-        this.setState({
-          error: "Something went wrong while opening article."
-        });
-      });
-  };
+  onArticlePress = (article) => this.props.articleOpen(article);
   
   renderItem = ({ item }) => {
     return (
@@ -118,7 +73,7 @@ class ArticleList extends Component {
   };
   
   renderView = () => {
-    let { articleList } = this.state;
+    let { articleList } = this.props;
     
     if (articleList.length === 0) articleList = null;
     
@@ -128,7 +83,7 @@ class ArticleList extends Component {
         renderItem={this.renderItem}
         keyExtractor={(item, index) => item.id}
         showsVerticalScrollIndicator={false}
-        refreshing={this.state.refreshing}
+        refreshing={this.props.refreshing}
         onRefresh={this.articlesFetch}
       />
     );
@@ -154,4 +109,12 @@ const styles = {
   }
 };
 
-export default ArticleList;
+const mapStateToProps = (state) => {
+  const { articleList, refreshing, error } = state.articleList;
+  
+  return { articleList, refreshing, error };
+};
+
+export default connect(mapStateToProps, {
+  articlesFetch, articleOpen, articleBookmarkOrRemoveBookmark
+})(ArticleList);

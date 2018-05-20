@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { FlatList, Text, View } from "react-native";
-import { fetchBookmarkList } from "../../data/models";
+import { connect } from "react-redux";
 import ArticleListItem from "./ArticleListItem";
-import { articleBookmarkOrRemoveBookmark, articleOpen, removeArticleById, replaceArticleById } from "./ArticleActions";
+import { articleBookmarkOrRemoveBookmark, articleOpen, fetchBookmarkList } from "../../actions";
 
 class BookmarkList extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -13,50 +13,27 @@ class BookmarkList extends Component {
   
   constructor() {
     super();
-    
-    this.state = {
-      bookmarkList: [],
-      error: ""
-    };
   }
   
   componentWillMount() {
     console.log("componentWillMount");
-    const bookmarkList = fetchBookmarkList();
-    
-    if (bookmarkList.length === 0) return;
-  
-    this.setState({
-      bookmarkList
-    });
+    this.fetchBookmarkList();
   }
   
-  onArticleBookmarkPress = (article) => {
-    articleBookmarkOrRemoveBookmark(
-      article, (newArticle) => {
-        let newBookmarkList = removeArticleById(this.state.bookmarkList, newArticle);
-        
-        this.setState({
-          ...this.state,
-          bookmarkList: newBookmarkList
-        });
-      }, (error) => {
-        console.log(error);
-      });
-  };
+  componentWillReceiveProps(nextProps) {
+    const { error } = nextProps;
+    
+    if (error !== "") {
+      console.log(error);
+      alert(error);
+    }
+  }
   
-  onArticlePress = (article) => {
-    articleOpen(article)
-      .then((launched) => {
-        console.log(`Launched browser: ${launched}`);
-      })
-      .catch((error) => {
-        console.log(error);
-        this.setState({
-          error: "Something went wrong while opening article."
-        });
-      });
-  };
+  fetchBookmarkList = () => this.props.fetchBookmarkList();
+  
+  onArticleBookmarkPress = (article) => this.props.articleBookmarkOrRemoveBookmark(article);
+  
+  onArticlePress = (article) => this.props.articleOpen(article);
   
   renderItem = ({ item }) => {
     return (
@@ -69,7 +46,7 @@ class BookmarkList extends Component {
   };
   
   renderView = () => {
-    let { bookmarkList } = this.state;
+    let { bookmarkList } = this.props;
     
     if (bookmarkList.length === 0) bookmarkList = null;
     
@@ -79,8 +56,8 @@ class BookmarkList extends Component {
         renderItem={this.renderItem}
         keyExtractor={(item, index) => item.id}
         showsVerticalScrollIndicator={false}
-        refreshing={this.state.refreshing}
-        onRefresh={this.articlesFetch}
+        refreshing={this.props.refreshing}
+        onRefresh={this.fetchBookmarkList}
       />
     );
   };
@@ -105,4 +82,12 @@ const styles = {
   }
 };
 
-export default BookmarkList;
+const mapStateToProps = (state) => {
+  const { bookmarkList, error, refreshing } = state.bookmarkList;
+  
+  return { bookmarkList, error, refreshing };
+};
+
+export default connect(mapStateToProps, {
+  fetchBookmarkList, articleOpen, articleBookmarkOrRemoveBookmark
+})(BookmarkList);
