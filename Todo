@@ -4,6 +4,7 @@ CONTINUE: Bookmark state not changing in UI.
 
 
 - Pagination
+- Fix android back button exiting the app issue.
 - Add NewsAPI attribution
 - Improve implementation of bookmark/unbookmarking.
-- Fix android back button exiting the app issue.
+- Find ways to improve rendeering flatlist.

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import { Image, Text, TouchableOpacity } from "react-native";
 import { CardButton, CardSection, CardView, HorizontalLineSeparator } from "../common";
 import {
@@ -18,7 +18,7 @@ import {
  * @property onBookmarkPress Function to be called when bookmark button is pressed. Receives article as parameter.
  * @property onArticlePress Function to be called when article is pressed. Receives article as parameter.
  **/
-class ArticleListItem extends React.PureComponent {
+class ArticleListItem extends PureComponent {
   constructor() {
     super();
     
@@ -29,9 +29,6 @@ class ArticleListItem extends React.PureComponent {
   
   componentDidUpdate(prevProps, prevState, snapshot) {
     console.log("componentDidUpdate");
-    console.log(`prevProps: ${prevProps}`);
-    console.log(`newProps: ${this.props}`);
-    console.log(prevState);
   }
   
   componentWillMount() {
@@ -50,7 +47,6 @@ class ArticleListItem extends React.PureComponent {
   }
   
   componentWillReceiveProps(nextProps) {
-    console.log("componentWillReceiveProps");
   }
   
   onArticlePress = () => this.props.onArticlePress(this.props.article);

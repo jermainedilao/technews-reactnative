@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { FlatList, StatusBar, View } from "react-native";
+import React, { PureComponent } from "react";
+import { ActivityIndicator, FlatList, StatusBar, View } from "react-native";
 import { connect } from "react-redux";
 import HeaderButtons from "react-navigation-header-buttons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -8,7 +8,7 @@ import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch } from "../
 import { DEFAULT_HEADER_BUTTON_ICON_SIZE, HEADER_BUTTON_ICON_COLOR } from "../../styles";
 import { ROUTE_BOOKMARK_LIST } from "../../routes";
 
-class ArticleList extends Component {
+class ArticleList extends PureComponent {
   // Used by react-navigation
   static navigationOptions = ({ navigation }) => {
     // Use `navigation.state` to get parameters passed from previous screen.
@@ -36,18 +36,21 @@ class ArticleList extends Component {
     };
   };
   
+  constructor() {
+    super();
+    this.onEndReachedCalledDuringMomentum = true;
+  }
+  
   componentWillMount() {
     this.props.navigation.setParams({
       onBookmarkHeaderButtonPress: this.onBookmarkHeaderButtonPress
     });
-    this.articlesFetch();
+    this.articlesFetch(1); // Fetch first page.
   }
   
   componentWillReceiveProps(nextProps) {
-    console.log("componentWillReceiveProps");
-    
     const { error } = nextProps;
-  
+    
     if (error !== "") {
       console.log(error);
       alert(error);
@@ -56,11 +59,23 @@ class ArticleList extends Component {
   
   onBookmarkHeaderButtonPress = () => this.props.navigation.navigate(ROUTE_BOOKMARK_LIST);
   
-  articlesFetch = () => this.props.articlesFetch();
+  articlesFetch = (page) => this.props.articlesFetch(page);
   
   onArticleBookmarkPress = (article) => this.props.articleBookmarkOrRemoveBookmark(article);
   
   onArticlePress = (article) => this.props.articleOpen(article);
+  
+  onEndReached = () => {
+    if (!this.onEndReachedCalledDuringMomentum) {
+      console.log("onEndReached");
+      this.onEndReachedCalledDuringMomentum = true;
+      this.articlesFetch(this.props.page + 1) // Fetch next page.
+    }
+  };
+  
+  onRefresh = () => {
+    this.articlesFetch(1) // Fetch first page.
+  };
   
   renderItem = ({ item }) => {
     return (
@@ -70,6 +85,14 @@ class ArticleList extends Component {
         onArticlePress={this.onArticlePress}
       />
     );
+  };
+  
+  renderFooter = () => {
+    if (this.props.footerIndicator) {
+      return <ActivityIndicator size="large" />
+    } else {
+      return null;
+    }
   };
   
   renderView = () => {
@@ -84,13 +107,19 @@ class ArticleList extends Component {
         keyExtractor={(item, index) => item.id}
         showsVerticalScrollIndicator={false}
         refreshing={this.props.refreshing}
-        onRefresh={this.articlesFetch}
+        onRefresh={this.onRefresh}
+        onEndReached={this.onEndReached}
+        onEndReachedThreshold={1}
+        initialNumToRender={3}
+        // https://stackoverflow.com/a/47940952/5285687
+        // https://github.com/facebook/react-native/issues/14015
+        onMomentumScrollBegin={() => this.onEndReachedCalledDuringMomentum = false}
+        ListFooterComponent={this.renderFooter}
       />
     );
   };
   
   render() {
-    console.log("render");
     const { containerStyle } = styles;
     
     return (
@@ -110,9 +139,13 @@ const styles = {
 };
 
 const mapStateToProps = (state) => {
-  const { articleList, refreshing, error } = state.articleList;
+  const {
+    articleList, refreshing, error, page, footerIndicator
+  } = state.articleList;
   
-  return { articleList, refreshing, error };
+  return {
+    articleList, refreshing, error, page, footerIndicator
+  };
 };
 
 export default connect(mapStateToProps, {

@@ -7,6 +7,10 @@ import {
 
 const INITIAL_STATE = {
   /**
+   * Used in paginating article list.
+   **/
+  page: 0,
+  /**
    * Articles to display in flat list.
    **/
   articleList: [],
@@ -14,7 +18,8 @@ const INITIAL_STATE = {
   /**
    * Refreshing state of flat list.
    **/
-  refreshing: false
+  refreshing: false,
+  footerIndicator: false
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -24,11 +29,31 @@ export default (state = INITIAL_STATE, action) => {
   
   switch (action.type) {
     case ARTICLES_FETCH_START:
-      return { ...state, refreshing: true };
+      return { ...state, refreshing: action.payload.page <= 1, footerIndicator: action.payload.page > 1 };
     case ARTICLES_FETCH_FAIL:
       return { ...state, error: action.payload };
     case ARTICLES_FETCH:
-      return { ...state, articleList: action.payload, refreshing: false };
+      if (action.payload.page === 1) {
+        // If fetching page 1, return fresh list.
+        return {
+          ...state,
+          articleList: action.payload.articleList,
+          refreshing: false,
+          page: action.payload.page,
+          footerIndicator: false
+        };
+      }
+      
+      const newArticleList = [];
+      newArticleList.push(...state.articleList); // Currently shown list.
+      newArticleList.push(...action.payload.articleList); // For new page from pagination.
+      return {
+        ...state,
+        articleList: newArticleList,
+        refreshing: false,
+        page: action.payload.page,
+        footerIndicator: false
+      };
     case ARTICLE_OPEN_URL_FAIL:
       return { ...state, error: "Something went wrong while opening article." };
     case ARTICLE_BOOKMARK:

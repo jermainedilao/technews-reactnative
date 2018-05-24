@@ -40,16 +40,21 @@ mapBookmarkedArticlesToList = (articles) => {
 
 /**
  * Fetches list of articles from BE.
+ *
+ * @param page Page to fetch.
  **/
-export const articlesFetch = () => {
+export const articlesFetch = (page) => {
   return (dispatch) => {
     dispatch({
-      type: ARTICLES_FETCH_START
+      type: ARTICLES_FETCH_START,
+      payload: {
+        page: page
+      }
     });
     
     const params = {
       "news_api_key": NEWS_API_KEY,
-      "page": 1
+      "page": page
     };
     
     const formBody = Object.keys(params).map(key => {
@@ -67,15 +72,18 @@ export const articlesFetch = () => {
     fetch(`${BASE_URL}/api/v1/newslist`, request)
       .then((response) => response.json())
       .then((response) => {
-        let articles = response.articles.map((article) => {
+        let articleList = response.articles.map((article) => {
           return convertArticleToArticleViewObject(article)
         });
-        
-        articles = mapBookmarkedArticlesToList(articles);
+  
+        articleList = mapBookmarkedArticlesToList(articleList);
         
         dispatch({
           type: ARTICLES_FETCH,
-          payload: articles
+          payload: {
+            page,
+            articleList
+          }
         })
       }, (error) => {
         console.log(error);
