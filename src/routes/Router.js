@@ -6,12 +6,8 @@ import { HEADER_BACKGROUND_COLOR, HEADER_BUTTON_ICON_COLOR } from "../styles";
 
 
 const Routes = createStackNavigator({
-  [ROUTE_ARTICLE_LIST]: {
-    screen: ArticleList
-  },
-  [ROUTE_BOOKMARK_LIST]: {
-    screen: BookmarkList
-  }
+  [ROUTE_ARTICLE_LIST]: ArticleList,
+  [ROUTE_BOOKMARK_LIST]: BookmarkList
 }, {
   initialRouteName: ROUTE_ARTICLE_LIST,
   navigationOptions: {

@@ -8,12 +8,14 @@ import { Routes } from "./routes"
 import { setStatusBarStyle } from "./styles";
 
 class App extends Component {
-  render() {
-    const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
+  componentWillMount() {
+    this.store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
     setStatusBarStyle();
-    
+  }
+  
+  render() {
     return (
-      <Provider store={store}>
+      <Provider store={this.store}>
         <Routes />
       </Provider>
     );
