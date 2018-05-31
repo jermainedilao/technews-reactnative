@@ -23,10 +23,6 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action) => {
-  console.log(state);
-  console.log(action.type);
-  console.log(action.payload);
-  
   switch (action.type) {
     case ARTICLES_FETCH_START:
       return { ...state, refreshing: action.payload.page <= 1, footerIndicator: action.payload.page > 1 };

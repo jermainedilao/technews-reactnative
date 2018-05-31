@@ -11,3 +11,6 @@ export const ARTICLE_UNBOOKMARK_FAIL = "article_unbookmark_fail";
 export const BOOKMARKS_FETCH = "bookmarks_fetch";
 export const BOOKMARKS_FETCH_START = "bookmarks_fetch_start";
 export const BOOKMARKS_FETCH_FAIL = "bookmarks_fetch_fail";
+
+// NavActions
+export const HARDWARE_BACK_PRESS = "HARDWARE_BACK_PRESS";

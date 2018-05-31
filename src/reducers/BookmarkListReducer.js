@@ -10,10 +10,6 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action) => {
-  console.log(state);
-  console.log(action.type);
-  console.log(state.payload);
-  
   switch (action.type) {
     case BOOKMARKS_FETCH_START:
       return { ...state, refreshing: true };

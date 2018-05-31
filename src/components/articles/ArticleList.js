@@ -6,7 +6,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import ArticleListItem from "./ArticleListItem";
 import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch } from "../../actions";
 import { DEFAULT_HEADER_BUTTON_ICON_SIZE, HEADER_BUTTON_ICON_COLOR } from "../../styles";
-import { ROUTE_BOOKMARK_LIST } from "../../routes";
+import { ROUTE_BOOKMARK_LIST } from "../../navigators";
 
 class ArticleList extends PureComponent {
   // Used by react-navigation
