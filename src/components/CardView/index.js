@@ -38,4 +38,4 @@ const styles = {
   }
 };
 
-export { CardView };
+export default CardView;

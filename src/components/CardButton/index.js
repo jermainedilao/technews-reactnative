@@ -63,4 +63,4 @@ const styles = {
   }
 };
 
-export { CardButton };
+export default CardButton;

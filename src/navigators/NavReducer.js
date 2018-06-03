@@ -1,5 +1,5 @@
 import { ToastAndroid } from "react-native";
-import { AppNavigator } from "../navigators/AppNavigator";
+import { AppNavigator } from "./AppNavigator";
 import { NavigationActions } from "react-navigation";
 
 const initialAction = { type: NavigationActions.Init };

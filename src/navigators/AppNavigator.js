@@ -5,8 +5,8 @@ import PropTypes from "prop-types";
 import { createReduxBoundAddListener, initializeListeners } from "react-navigation-redux-helpers";
 import { connect } from "react-redux";
 
-import BookmarkList from "../components/articles/BookmarkList";
-import ArticleList from "../components/articles/ArticleList";
+import BookmarkList from "../scenes/Articles/scenes/BookmarkList";
+import ArticleList from "../scenes/Articles/scenes/ArticleList";
 import { ROUTE_ARTICLE_LIST, ROUTE_BOOKMARK_LIST } from "./routes";
 import { HEADER_BACKGROUND_COLOR, HEADER_BUTTON_ICON_COLOR } from "../styles";
 
@@ -56,7 +56,7 @@ class AppWithNavigationState extends Component {
         BackHandler.exitApp();
       }
     });
-  
+    
     this.backPressSubscriptions.add(this.onBackPress);
   }
   

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { FlatList, Text, View } from "react-native";
 import { connect } from "react-redux";
-import ArticleListItem from "./ArticleListItem";
-import { articleBookmarkOrRemoveBookmark, articleOpen, fetchBookmarkList } from "../../actions";
+import ArticleListItem from "../../components/ArticleListItem";
+import { articleBookmarkOrRemoveBookmark, articleOpen, fetchBookmarkList } from "../../../../data/articles/actions";
 
 class BookmarkList extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -13,25 +13,34 @@ class BookmarkList extends Component {
   
   constructor() {
     super();
+    
+    this.state = {
+      /**
+       * Refreshing state of flat list.
+       **/
+      refreshing: true
+    };
   }
   
   componentWillMount() {
-    console.log("componentWillMount");
     this.fetchBookmarkList();
   }
   
   componentWillReceiveProps(nextProps) {
-    const { error } = nextProps;
+    const { error, bookmarkList } = nextProps;
     
     if (error !== "") {
-      console.log(error);
       alert(error);
+    }
+    
+    if (bookmarkList.length > 0) {
+      this.setState({ refreshing: false });
     }
   }
   
   fetchBookmarkList = () => this.props.fetchBookmarkList();
   
-  onArticleBookmarkPress = (article) => this.props.articleBookmarkOrRemoveBookmark(article);
+  onArticleBookmarkPress = (article) => this.props.articleBookmarkOrRemoveBookmark(article, true);
   
   onArticlePress = (article) => this.props.articleOpen(article);
   
@@ -56,14 +65,13 @@ class BookmarkList extends Component {
         renderItem={this.renderItem}
         keyExtractor={(item, index) => item.id}
         showsVerticalScrollIndicator={false}
-        refreshing={this.props.refreshing}
+        refreshing={this.state.refreshing}
         onRefresh={this.fetchBookmarkList}
       />
     );
   };
   
   render() {
-    console.log("render");
     const { containerStyle } = styles;
     
     return (
@@ -83,9 +91,9 @@ const styles = {
 };
 
 const mapStateToProps = (state) => {
-  const { bookmarkList, error, refreshing } = state.bookmarkList;
+  const { bookmarkList, error } = state.data.articleList;
   
-  return { bookmarkList, error, refreshing };
+  return { bookmarkList, error };
 };
 
 export default connect(mapStateToProps, {

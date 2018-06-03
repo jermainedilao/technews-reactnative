@@ -3,10 +3,10 @@ import { ActivityIndicator, FlatList, StatusBar, View } from "react-native";
 import { connect } from "react-redux";
 import HeaderButtons from "react-navigation-header-buttons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import ArticleListItem from "./ArticleListItem";
-import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch } from "../../actions";
-import { DEFAULT_HEADER_BUTTON_ICON_SIZE, HEADER_BUTTON_ICON_COLOR } from "../../styles";
-import { ROUTE_BOOKMARK_LIST } from "../../navigators";
+import ArticleListItem from "../../components/ArticleListItem";
+import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch } from "../../../../data/articles/actions";
+import { DEFAULT_HEADER_BUTTON_ICON_SIZE, HEADER_BUTTON_ICON_COLOR } from "../../../../styles";
+import { ROUTE_BOOKMARK_LIST } from "../../../../navigators";
 
 class ArticleList extends PureComponent {
   // Used by react-navigation
@@ -39,6 +39,16 @@ class ArticleList extends PureComponent {
   constructor() {
     super();
     this.onEndReachedCalledDuringMomentum = true;
+    this.state = {
+      /**
+       * Refreshing state of flat list.
+       **/
+      refreshing: true,
+      /**
+       * Decides to show loading indicator in footer.
+       **/
+      footerIndicator: false
+    };
   }
   
   componentWillMount() {
@@ -49,17 +59,30 @@ class ArticleList extends PureComponent {
   }
   
   componentWillReceiveProps(nextProps) {
-    const { error } = nextProps;
+    const { error, articleList, page } = nextProps;
     
     if (error !== "") {
       console.log(error);
       alert(error);
     }
+    
+    if (articleList.length > 0) {
+      if (page === 1) {
+        this.setState({ refreshing: false });
+      } else if (page > 0) {
+        this.setState({ footerIndicator: false });
+      }
+    }
   }
   
   onBookmarkHeaderButtonPress = () => this.props.navigation.navigate(ROUTE_BOOKMARK_LIST);
   
-  articlesFetch = (page) => this.props.articlesFetch(page);
+  articlesFetch = (page) => {
+    if (page > 1) {
+      this.setState({ footerIndicator: true })
+    }
+    this.props.articlesFetch(page);
+  };
   
   onArticleBookmarkPress = (article) => this.props.articleBookmarkOrRemoveBookmark(article);
   
@@ -74,6 +97,7 @@ class ArticleList extends PureComponent {
   };
   
   onRefresh = () => {
+    this.setState({ refreshing: true });
     this.articlesFetch(1) // Fetch first page.
   };
   
@@ -88,7 +112,7 @@ class ArticleList extends PureComponent {
   };
   
   renderFooter = () => {
-    if (this.props.footerIndicator) {
+    if (this.state.footerIndicator) {
       return <ActivityIndicator size="large" />
     } else {
       return null;
@@ -106,7 +130,7 @@ class ArticleList extends PureComponent {
         renderItem={this.renderItem}
         keyExtractor={(item, index) => item.id}
         showsVerticalScrollIndicator={false}
-        refreshing={this.props.refreshing}
+        refreshing={this.state.refreshing}
         onRefresh={this.onRefresh}
         onEndReached={this.onEndReached}
         onEndReachedThreshold={1}
@@ -140,11 +164,11 @@ const styles = {
 
 const mapStateToProps = (state) => {
   const {
-    articleList, refreshing, error, page, footerIndicator
-  } = state.articleList;
+    articleList, error, page
+  } = state.data.articleList;
   
   return {
-    articleList, refreshing, error, page, footerIndicator
+    articleList, error, page
   };
 };
 

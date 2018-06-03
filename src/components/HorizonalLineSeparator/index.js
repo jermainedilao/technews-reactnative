@@ -20,4 +20,4 @@ const styles = {
   }
 };
 
-export { HorizontalLineSeparator };
+export default HorizontalLineSeparator;

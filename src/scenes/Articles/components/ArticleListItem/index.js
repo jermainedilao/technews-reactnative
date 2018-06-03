@@ -1,6 +1,9 @@
 import React, { PureComponent } from "react";
 import { Image, Text, TouchableOpacity } from "react-native";
-import { CardButton, CardSection, CardView, HorizontalLineSeparator } from "../common";
+import CardButton from "../../../../components/CardButton";
+import CardSection from "../../../../components/CardSection";
+import CardView from "../../../../components/CardView";
+import HorizontalLineSeparator from "../../../../components/HorizonalLineSeparator";
 import {
   BOOKMARK_COLOR,
   DEFAULT_ARTICLE_IMAGE_HEIGHT,
@@ -9,7 +12,7 @@ import {
   TEXT_SIZE_LARGE,
   TEXT_SIZE_NORMAL,
   TEXT_SIZE_SMALL
-} from "../../styles";
+} from "../../../../styles";
 
 /**
  * Component for each item in article list.
