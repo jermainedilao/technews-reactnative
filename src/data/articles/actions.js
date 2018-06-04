@@ -1,9 +1,12 @@
+import { Linking, Platform } from "react-native";
+import { CustomTabs } from "react-native-custom-tabs";
+
 // https://github.com/facebook/immutable-js/issues/1305
 import "core-js/es6/symbol";
 import "core-js/fn/symbol/iterator";
 
 import * as articlesApi from "../../services/articles/api";
-import { convertArticleToArticleViewObject } from "../../utils/parser";
+import { addNewsApiAttribution, convertArticleDbModelToViewObject, convertArticleToArticleViewObject } from "./parser";
 import {
   ARTICLE_BOOKMARK,
   ARTICLE_BOOKMARK_FAIL,
@@ -17,8 +20,6 @@ import {
   BOOKMARKS_FETCH_FAIL
 } from "./actionTypes";
 import * as articlesDb from "../db/models/articles";
-import { Linking, Platform } from "react-native";
-import { CustomTabs } from "react-native-custom-tabs";
 
 /**
  * Update's bookmark status of article from the list if `id` exists in bookmarked article from DB.
@@ -48,14 +49,19 @@ const mapBookmarkedArticlesToList = (articles) => {
 export const articlesFetch = (page) => {
   return (dispatch) => {
     articlesApi.get(page)
-      .then((response) => response.json())
       .then((response) => {
-        let articleList = response.articles.map((article) => {
+        console.log("received response");
+        console.log(response);
+        return response.articles.map((article) => {
           return convertArticleToArticleViewObject(article)
         });
-        
-        articleList = mapBookmarkedArticlesToList(articleList);
-        
+      })
+      .then((articleList) => {
+        console.log("mapping bookmarked articles");
+        return mapBookmarkedArticlesToList(articleList);
+      })
+      .then((articleList) => {
+        console.log("dispatching action");
         dispatch({
           type: ARTICLES_FETCH,
           payload: {
@@ -67,6 +73,7 @@ export const articlesFetch = (page) => {
         dispatch({ type: ARTICLES_FETCH_FAIL, payload: error });
       })
       .catch((error) => {
+        console.log(error);
         dispatch({ type: ARTICLES_FETCH_FAIL, payload: error });
       });
   }
@@ -106,7 +113,7 @@ export const articleOpen = (article) => {
  * @param article Article to bookmark.
  * @param fromBookmarkList Pass true when calling from bookmark list screen.
  **/
-export const articleBookmarkOrRemoveBookmark = (article, fromBookmarkList=false) => {
+export const articleBookmarkOrRemoveBookmark = (article, fromBookmarkList = false) => {
   return (dispatch) => {
     const newArticle = { ...article, bookmark: !article.bookmark };
     
@@ -146,11 +153,20 @@ export const articleBookmarkOrRemoveBookmark = (article, fromBookmarkList=false)
 export const fetchBookmarkList = () => {
   return (dispatch) => {
     try {
+      let bookmarkList = articlesDb.fetch();
+      
+      // Do not use Realm objects in displaying flat list.
+      // https://github.com/realm/realm-js/issues/1031
+      bookmarkList = bookmarkList.map((article) => {
+        return convertArticleDbModelToViewObject(article);
+      });
+      
       dispatch({
         type: BOOKMARKS_FETCH,
-        payload: articlesDb.fetch()
+        payload: bookmarkList
       });
     } catch (e) {
+      console.log(e);
       dispatch({ type: BOOKMARKS_FETCH_FAIL });
     }
   };

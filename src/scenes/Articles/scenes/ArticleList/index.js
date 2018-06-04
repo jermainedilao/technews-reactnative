@@ -1,12 +1,15 @@
 import React, { PureComponent } from "react";
-import { ActivityIndicator, FlatList, StatusBar, View } from "react-native";
+import { ActivityIndicator, FlatList, StatusBar, Text, View } from "react-native";
+import _ from "lodash";
 import { connect } from "react-redux";
 import HeaderButtons from "react-navigation-header-buttons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import ArticleListItem from "../../components/ArticleListItem";
+import AttributionListItem from "../../components/AttributionListItem";
 import { articleBookmarkOrRemoveBookmark, articleOpen, articlesFetch } from "../../../../data/articles/actions";
 import { DEFAULT_HEADER_BUTTON_ICON_SIZE, HEADER_BUTTON_ICON_COLOR } from "../../../../styles";
 import { ROUTE_BOOKMARK_LIST } from "../../../../navigators";
+import { VIEW_TYPE_ARTICLE, VIEW_TYPE_ATTRIBUTION } from "../../../../constants";
 
 class ArticleList extends PureComponent {
   // Used by react-navigation
@@ -81,7 +84,9 @@ class ArticleList extends PureComponent {
     if (page > 1) {
       this.setState({ footerIndicator: true })
     }
-    this.props.articlesFetch(page);
+    
+    const debouncedArticlesFetch = _.debounce(this.props.articlesFetch, 200);
+    debouncedArticlesFetch(page);
   };
   
   onArticleBookmarkPress = (article) => this.props.articleBookmarkOrRemoveBookmark(article);
@@ -92,7 +97,7 @@ class ArticleList extends PureComponent {
     if (!this.onEndReachedCalledDuringMomentum) {
       console.log("onEndReached");
       this.onEndReachedCalledDuringMomentum = true;
-      this.articlesFetch(this.props.page + 1) // Fetch next page.
+      this.articlesFetch(this.props.page + 1); // Fetch next page.
     }
   };
   
@@ -102,13 +107,18 @@ class ArticleList extends PureComponent {
   };
   
   renderItem = ({ item }) => {
-    return (
-      <ArticleListItem
-        article={item}
-        onBookmarkPress={this.onArticleBookmarkPress}
-        onArticlePress={this.onArticlePress}
-      />
-    );
+    switch (item.viewType) {
+      case VIEW_TYPE_ATTRIBUTION:
+        return <AttributionListItem />;
+      default:
+        return (
+          <ArticleListItem
+            article={item}
+            onBookmarkPress={this.onArticleBookmarkPress}
+            onArticlePress={this.onArticlePress}
+          />
+        );
+    }
   };
   
   renderFooter = () => {

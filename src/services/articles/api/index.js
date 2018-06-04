@@ -20,5 +20,6 @@ export const get = (page) => {
     body: formBody
   };
   
-  return fetch(`${BASE_URL}/api/v1/newslist`, request);
+  return fetch(`${BASE_URL}/api/v1/newslist`, request)
+    .then((response) => response.json());
 };

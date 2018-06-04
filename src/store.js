@@ -1,5 +1,5 @@
 import React from "react";
-import NavReducer from "./navigators/NavReducer";
+import NavReducer from "./navigators/reducers";
 import { applyMiddleware, combineReducers, createStore } from "redux";
 import dataReducer from "./data/reducers";
 import ReduxThunk from "redux-thunk";

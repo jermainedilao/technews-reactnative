@@ -4,8 +4,8 @@ import {
   ARTICLES_FETCH, ARTICLES_FETCH_FAIL, BOOKMARKS_FETCH, BOOKMARKS_FETCH_FAIL
 } from "./actionTypes";
 import {
-  replaceArticleById, removeArticleById
-} from "../../utils/parser"
+  replaceArticleById, removeArticleById, addNewsApiAttribution
+} from "./parser"
 
 
 const INITIAL_STATE = {
@@ -35,10 +35,19 @@ export default (state = INITIAL_STATE, action) => {
           page: action.payload.page,
         };
       }
-      
-      const newArticleList = [];
+  
+      let newArticleList = [];
+      console.log("pushing current list");
       newArticleList.push(...state.articleList); // Currently shown list.
+      console.log(newArticleList);
+      console.log("adding news api attribution");
+      newArticleList = addNewsApiAttribution(newArticleList); // Add attribution
+      console.log(newArticleList);
+      console.log("pushing new list");
       newArticleList.push(...action.payload.articleList); // For new page from pagination.
+      console.log(newArticleList);
+  
+      console.log("returning state");
       return {
         ...state,
         articleList: newArticleList,
@@ -77,12 +86,7 @@ export default (state = INITIAL_STATE, action) => {
     // BOOKMARK LIST ACTIONS
     
     case BOOKMARKS_FETCH:
-      // Do not use Realm objects in displaying flat list.
-      // https://github.com/realm/realm-js/issues/1031
-      const bookmarkList = action.payload.map((article) => {
-        return Object.assign({}, article);
-      });
-      return { ...state, bookmarkList };
+      return { ...state, bookmarkList: action.payload };
     
     case BOOKMARKS_FETCH_FAIL:
       return { ...state, error: "Something went wrong while fetching bookmark list." };

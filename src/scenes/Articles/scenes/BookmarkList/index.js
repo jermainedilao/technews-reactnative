@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { FlatList, Text, View } from "react-native";
 import { connect } from "react-redux";
 import ArticleListItem from "../../components/ArticleListItem";
 import { articleBookmarkOrRemoveBookmark, articleOpen, fetchBookmarkList } from "../../../../data/articles/actions";
 
-class BookmarkList extends Component {
+class BookmarkList extends PureComponent {
   static navigationOptions = ({ navigation }) => {
     return {
       title: "Bookmarks"
@@ -33,7 +33,7 @@ class BookmarkList extends Component {
       alert(error);
     }
     
-    if (bookmarkList.length > 0) {
+    if (bookmarkList != null) {
       this.setState({ refreshing: false });
     }
   }
