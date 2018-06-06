@@ -29,10 +29,8 @@ And, you're all set!
 * [React Navigation Header Buttons](https://github.com/vonovak/react-navigation-header-buttons) - To mimic native header buttons (ActionBar/Toolbar in android).
 
 ### Todo
-* Pagination.
-* Add NewsAPI attribution.
-* Improve implementation of bookmark/unbookmarking.
-* Fix android back button exiting the app issue.
+* Notification to users every morning.
+* Pagination in bookmark list screen.
 
 ### Inspiration
 To learn new tools in developing mobile apps, as well as to learn new programming language.

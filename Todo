@@ -1,6 +1,4 @@
 
 
-CONTINUE: Bookmark state not changing in UI.
-
-- Improve implementation of bookmark/unbookmarking.
-- Find ways to improve rendering flatlist.
+* Notification to users every morning.
+* Pagination in bookmark list screen.
