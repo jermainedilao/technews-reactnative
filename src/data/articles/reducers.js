@@ -6,6 +6,7 @@ import {
 import {
   replaceArticleById, removeArticleById, addNewsApiAttribution
 } from "./parser"
+import { VIEW_TYPE_ATTRIBUTION } from "../../constants";
 
 
 const INITIAL_STATE = {
@@ -36,16 +37,18 @@ export default (state = INITIAL_STATE, action) => {
         };
       }
   
+      // Check if last item of the current list is already an attribution.
+      // This is to prevent adding attribution multiple times when the end of the list is scrolled multiple times.
+      const shouldAddAttribution = state.articleList[state.articleList.length - 1].viewType !== VIEW_TYPE_ATTRIBUTION;
+      
       let newArticleList = [];
-      console.log("pushing current list");
       newArticleList.push(...state.articleList); // Currently shown list.
-      console.log(newArticleList);
-      console.log("adding news api attribution");
-      newArticleList = addNewsApiAttribution(newArticleList); // Add attribution
-      console.log(newArticleList);
-      console.log("pushing new list");
+      
+      if (shouldAddAttribution) {
+        newArticleList = addNewsApiAttribution(newArticleList); // Add attribution
+      }
+      
       newArticleList.push(...action.payload.articleList); // For new page from pagination.
-      console.log(newArticleList);
   
       console.log("returning state");
       return {
